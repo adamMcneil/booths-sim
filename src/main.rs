@@ -51,11 +51,11 @@ fn test_subtract() {
     booth.subtract();
     assert_eq!(booth.q, "0110");
 
-    // booth.add();
-    // assert_eq!(booth.q, "0100");
+    booth.subtract();
+    assert_eq!(booth.q, "1100");
 
-    // booth.add();
-    // assert_eq!(booth.q, "1110");
+    booth.subtract();
+    assert_eq!(booth.q, "0010");
 }
 
 #[test]
