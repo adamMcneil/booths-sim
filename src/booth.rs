@@ -27,6 +27,7 @@ impl Booth {
         println!("a: {}", binary_string_to_decimal_twos_complement(&self.a));
         println!("b: {}", binary_string_to_decimal_twos_complement(&self.b));
 
+        println!("{} {} {} {}", self.q, self.a, self.e, self.b);
         for _ in 0..n {
             let bit = self.a.chars().last();
 
@@ -49,6 +50,50 @@ impl Booth {
         println!("answer: {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
     }
 
+    pub fn extended_solve(&mut self) {
+        let n = self.length; 
+        println!("a: {}", binary_string_to_decimal_twos_complement(&self.a));
+        println!("b: {}", binary_string_to_decimal_twos_complement(&self.b));
+
+        println!("{} {} {} {}", self.q, self.a, self.e, self.b);
+        for _ in 0..n/2 {
+            let bits = &self.a[self.length - 2..];
+            println!("{}", bits); 
+            match bits {
+                "00" => {
+                    if self.e == '1' {
+                        self.add();
+                    }
+                },
+                "01" => {
+                    if self.e == '0' {
+                        self.add();
+                    } else {
+                        self.add();
+                        self.add();
+                    }
+                },
+                "10" => {
+                    if self.e == '0' {
+                        self.subtract();
+                        self.subtract();
+                    } else {
+                        self.subtract();
+                    }
+                },
+                "11" => {
+                    if self.e == '0' {
+                        self.subtract();
+                    }
+                },
+                _ => {},
+            }
+            self.shift();
+            self.shift();
+        }
+        println!("answer: {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
+    }
+
     pub fn add(&mut self) {
         self.q = add_binary_strings(&self.q, &self.b, self.length);
         println!("{} {} {} {} ADD", self.q, self.a, self.e, self.b);
@@ -65,13 +110,17 @@ impl Booth {
         self.q = format!("{}{}", self.q.chars().next().unwrap(), self.q);
         println!("{} {} {} {} SHIFT", self.q, self.a, self.e, self.b);
     }
+
+    pub fn get_answer(self) -> i64 {
+        binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a))
+    }
 }
 
 fn binary_string_to_decimal(binary: &str) -> i64 {
     i64::from_str_radix(binary, 2).expect("Invalid binary string")
 }
 
-fn binary_string_to_decimal_twos_complement(binary: &str) -> i64 {
+pub(crate) fn binary_string_to_decimal_twos_complement(binary: &str) -> i64 {
     let is_negative = binary.chars().next().unwrap() == '1';
 
     if !is_negative {
@@ -87,22 +136,32 @@ fn binary_string_to_decimal_twos_complement(binary: &str) -> i64 {
     -((i64::from_str_radix(&inverted_binary, 2).unwrap()) + 1)
 }
 
-fn decimal_to_binary_string(decimal: i64) -> String {
-    format!("{:b}", decimal)
+pub(crate) fn decimal_to_binary_string(decimal: i64, length: usize) -> String {
+    let mut string = format!("{:b}", decimal);
+    if string.len() > length {
+        string = string[string.len() - length..].to_string();
+    }
+    while string.len() < length {
+        string = format!("0{}", string);
+    }
+    string
 }
 
 fn add_binary_strings(a: &str, b: &str, length: usize) -> String {
     let sum = binary_string_to_decimal_twos_complement(a) + binary_string_to_decimal_twos_complement(b);
-    let mut sum_string = decimal_to_binary_string(sum);
+    let mut sum_string = decimal_to_binary_string(sum, length);
     if sum_string.len() > length {
         sum_string = sum_string[sum_string.len() - length..].to_string();
+    }
+    while sum_string.len() < length {
+        sum_string = format!("0{}", sum_string);
     }
     sum_string
 }
 
 fn subtract_binary_strings(a: &str, b: &str, length: usize) -> String {
     let sum = binary_string_to_decimal_twos_complement(a) - binary_string_to_decimal_twos_complement(b);
-    let mut sum_string = decimal_to_binary_string(sum);
+    let mut sum_string = decimal_to_binary_string(sum, length);
     if sum_string.len() > length {
         sum_string = sum_string[sum_string.len() - length..].to_string();
     }
