@@ -4,6 +4,9 @@ pub(crate) struct Booth {
     pub a: String, // a and b are the two numbers that are being multiplied
     pub b: String,
     pub length: usize,
+    pub iterations: usize,
+    pub additions: usize,
+    pub subtractions: usize,
 }
 
 impl Booth {
@@ -15,6 +18,9 @@ impl Booth {
             q: std::iter::repeat('0').take(length).collect(),
             e: '0',
             length: length,
+            iterations: 0,
+            additions: 0,
+            subtractions: 0,
         }
     }
 
@@ -35,11 +41,13 @@ impl Booth {
                 Some('0') => {
                     if self.e == '1' {
                         self.add();
+                        self.additions += 1;
                     }
                 },
                 Some('1') => {
                     if self.e == '0' {
                         self.subtract();
+                        self.subtractions += 1;
                     }
                 },
                 _ => {},
@@ -48,9 +56,26 @@ impl Booth {
             // self.print();
         }
         println!("answer: {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
+        println!("iterations: {}", self.iterations);
+        println!("additions: {}", self.additions);
+        println!("subtractions: {}", self.subtractions);
     }
 
     pub fn extended_solve(&mut self) {
+        self.a = extend(&self.a);
+        self.a = extend(&self.a);
+        self.b = extend(&self.b);
+        self.b = extend(&self.b);
+        self.length += 1;
+        self.length += 1;
+        self.q.push('0');
+        self.q.push('0');
+        if self.length % 2 == 1 {
+            self.a = extend(&self.a);
+            self.b = extend(&self.b);
+            self.length += 1;
+            self.q.push('0');
+        }
         let n = self.length; 
         println!("a: {}", binary_string_to_decimal_twos_complement(&self.a));
         println!("b: {}", binary_string_to_decimal_twos_complement(&self.b));
@@ -58,7 +83,6 @@ impl Booth {
         println!("{} {} {} {}", self.q, self.a, self.e, self.b);
         for _ in 0..n/2 {
             let bits = &self.a[self.length - 2..];
-            println!("{}", bits); 
             match bits {
                 "00" => {
                     if self.e == '1' {
@@ -69,14 +93,14 @@ impl Booth {
                     if self.e == '0' {
                         self.add();
                     } else {
-                        self.add();
-                        self.add();
+                        // self.add(); self.add();
+                        self.add_two();
                     }
                 },
                 "10" => {
                     if self.e == '0' {
-                        self.subtract();
-                        self.subtract();
+                        // self.subtract(); self.subtract();
+                        self.subtract_two();
                     } else {
                         self.subtract();
                     }
@@ -92,6 +116,18 @@ impl Booth {
             self.shift();
         }
         println!("answer: {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
+    }
+
+    pub fn add_two(&mut self) {
+        let times = self.b[1..].to_string() + "0";
+        self.q = add_binary_strings(&self.q, &times, self.length);
+        println!("{} {} {} {} 2 * ADD", self.q, self.a, self.e, self.b);
+    }
+    
+    pub fn subtract_two(&mut self) {
+        let times = self.b[1..].to_string() + "0";
+        self.q = subtract_binary_strings(&self.q, &times, self.length);
+        println!("{} {} {} {} 2 * SUBTRACT", self.q, self.a, self.e, self.b);
     }
 
     pub fn add(&mut self) {
@@ -186,4 +222,15 @@ pub(crate) fn complement(a: &str) -> String {
     .collect();
 
     complemented
+}
+pub(crate) fn extend(string: &str) -> String {
+    if let Some(first_char) = string.chars().next() {
+        match first_char {
+            '0' => format!("0{}", string),
+            '1' => format!("1{}", string),
+            _ => string.to_string(), // No change for other characters
+        }
+    } else {
+        string.to_string() // Handle empty string
+    }
 }

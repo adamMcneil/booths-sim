@@ -5,10 +5,10 @@ use booth::binary_string_to_decimal_twos_complement;
 use booth::decimal_to_binary_string;
 
 fn main() {
-    let mut booth = Booth::new("0110101".to_string(), "1000011".to_string());
-    booth.solve();
+    let mut booth = Booth::new("111001".to_string(), "100111".to_string());
+    booth.extended_solve();
 }
-
+ 
 // #[test]
 // fn test_complement() {
 //     let string = "011010111";
