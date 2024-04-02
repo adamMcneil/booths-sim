@@ -41,19 +41,17 @@ impl Booth {
                 Some('0') => {
                     if self.e == '1' {
                         self.add();
-                        self.additions += 1;
                     }
                 },
                 Some('1') => {
                     if self.e == '0' {
                         self.subtract();
-                        self.subtractions += 1;
                     }
                 },
                 _ => {},
             }
             self.shift();
-            // self.print();
+            self.iterations += 1;
         }
         println!("answer: {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
         println!("iterations: {}", self.iterations);
@@ -93,13 +91,11 @@ impl Booth {
                     if self.e == '0' {
                         self.add();
                     } else {
-                        // self.add(); self.add();
                         self.add_two();
                     }
                 },
                 "10" => {
                     if self.e == '0' {
-                        // self.subtract(); self.subtract();
                         self.subtract_two();
                     } else {
                         self.subtract();
@@ -114,28 +110,36 @@ impl Booth {
             }
             self.shift();
             self.shift();
+            self.iterations += 1;
         }
         println!("answer: {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
+        println!("iterations: {}", self.iterations);
+        println!("additions: {}", self.additions);
+        println!("subtractions: {}", self.subtractions);
     }
 
     pub fn add_two(&mut self) {
+        self.additions += 1;
         let times = self.b[1..].to_string() + "0";
         self.q = add_binary_strings(&self.q, &times, self.length);
         println!("{} {} {} {} 2 * ADD", self.q, self.a, self.e, self.b);
     }
     
     pub fn subtract_two(&mut self) {
+        self.subtractions += 1;
         let times = self.b[1..].to_string() + "0";
         self.q = subtract_binary_strings(&self.q, &times, self.length);
         println!("{} {} {} {} 2 * SUBTRACT", self.q, self.a, self.e, self.b);
     }
 
     pub fn add(&mut self) {
+        self.additions += 1;
         self.q = add_binary_strings(&self.q, &self.b, self.length);
         println!("{} {} {} {} ADD", self.q, self.a, self.e, self.b);
     }
 
     pub fn subtract(&mut self) {
+        self.subtractions += 1;
         self.q = subtract_binary_strings(&self.q, &self.b, self.length);
         println!("{} {} {} {} SUB", self.q, self.a, self.e, self.b);
     }

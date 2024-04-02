@@ -7,6 +7,9 @@ use booth::decimal_to_binary_string;
 fn main() {
     let mut booth = Booth::new("111001".to_string(), "100111".to_string());
     booth.extended_solve();
+    println!("");
+    let mut booth = Booth::new("11111001".to_string(), "11100111".to_string());
+    booth.solve();
 }
  
 // #[test]
