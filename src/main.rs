@@ -1,17 +1,90 @@
-use std::env;
+use std::fmt::Error;
+use std::fs::File;
+use std::io::{self, Write};
+use std::io::BufRead;
 mod booth;
 use booth::Booth;
-use booth::binary_string_to_decimal_twos_complement;
-use booth::decimal_to_binary_string;
+
+use crate::booth::decimal_to_binary_string;
 
 fn main() {
-    let mut booth = Booth::new("111001".to_string(), "100111".to_string());
-    booth.extended_solve();
-    println!("");
-    let mut booth = Booth::new("11111001".to_string(), "11100111".to_string());
-    booth.solve();
+    // let mut booth = Booth::new("111001".to_string(), "100111".to_string());
+    // booth.extended_solve();
+    // println!("");
+    // let mut booth = Booth::new("11111001".to_string(), "11100111".to_string());
+    // booth.solve();
+    // let numbers = read_binary_from_file("input.txt");
+    // match numbers {
+    //     Ok(numbers) => {
+    //         for pair in numbers {
+    //             // println!("{} {}", pair.0, pair.1);
+    //             let mut booth = Booth::new(pair.0.to_string(), pair.1.to_string());
+    //             println!("NORMAL");
+    //             booth.solve();
+    //             let mut booth = Booth::new(pair.0.to_string(), pair.1.to_string());
+    //             println!("EXTENDED");
+    //             booth.extended_solve();
+    //             println!("");
+
+    //         }
+    //     },
+    //     Err(_) => todo!(),
+    // } 
+    export_normal_data();
+    export_extended_data();
 }
- 
+
+fn read_binary_from_file(filename: &str) -> io::Result<Vec<(String, String)>> {
+    let file = File::open(filename)?;
+    let reader = io::BufReader::new(file);
+
+    let mut binary_hex_pairs = Vec::new();
+
+    for line in reader.lines() {
+        let line = line?;
+        let mut parts = line.trim().split(' ');
+
+        if let Some(binary1) = parts.next() {
+            if let Some(binary2) = parts.next() {
+                binary_hex_pairs.push((binary1.to_string(), binary2.to_string()));
+            }
+        }
+    }
+
+    Ok(binary_hex_pairs)
+}
+
+fn export_normal_data() -> io::Result<()> {
+    let mut file = File::create("normal_output.txt")?;
+    let numbers = read_binary_from_file("input.txt");
+    match numbers {
+        Ok(numbers) => {
+            Ok(for pair in numbers {
+                let mut booth = Booth::new(pair.0.to_string(), pair.1.to_string());
+                booth.solve();
+                let _ = file.write(format!("{} {} {} {}\n", pair.0.len(), booth.iterations, booth.additions, booth.subtractions).as_bytes());
+
+            })
+        },
+        Err(_) => todo!(),
+    } 
+}
+
+fn export_extended_data() -> io::Result<()> {
+    let mut file = File::create("extended_output.txt")?;
+    let numbers = read_binary_from_file("input.txt");
+    match numbers {
+        Ok(numbers) => {
+            Ok(for pair in numbers {
+                let mut booth = Booth::new(pair.0.to_string(), pair.1.to_string());
+                booth.extended_solve();
+                let _ = file.write(format!("{} {} {} {}\n", pair.0.len(), booth.iterations, booth.additions, booth.subtractions).as_bytes());
+
+            })
+        },
+        Err(_) => todo!(),
+    } 
+}
 // #[test]
 // fn test_complement() {
 //     let string = "011010111";
