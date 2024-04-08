@@ -54,6 +54,7 @@ impl Booth {
             self.iterations += 1;
         }
         println!("answer: {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
+        println!("answer: {}", binary_to_hex(&(self.q.to_string() + &self.a)).unwrap());
         println!("iterations: {}", self.iterations);
         println!("additions: {}", self.additions);
         println!("subtractions: {}", self.subtractions);
@@ -113,6 +114,7 @@ impl Booth {
             self.iterations += 1;
         }
         println!("answer: {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
+        println!("answer: {}", binary_to_hex(&(self.q.to_string() + &self.a)).unwrap());
         println!("iterations: {}", self.iterations);
         println!("additions: {}", self.additions);
         println!("subtractions: {}", self.subtractions);
@@ -237,4 +239,30 @@ pub(crate) fn extend(string: &str) -> String {
     } else {
         string.to_string() // Handle empty string
     }
+}
+
+fn binary_to_hex(binary: &str) -> Option<String> {
+    // Check if the binary string is valid
+    if !binary.chars().all(|c| c == '0' || c == '1') {
+        return None;
+    }
+
+    // Pad the binary string with leading zeros if necessary
+    let mut binary_padded = binary.to_string();
+    while binary_padded.len() % 4  != 0 {
+        binary_padded = extend(&binary_padded);
+    }
+
+    // Convert binary string to hexadecimal
+    let hex = binary_padded
+        .chars()
+        .collect::<Vec<char>>()
+        .chunks(4)
+        .map(|chunk| {
+            let chunk_str: String = chunk.iter().collect();
+            format!("{:X}", usize::from_str_radix(&chunk_str, 2).unwrap())
+        })
+        .collect::<String>();
+
+    Some(hex)
 }
