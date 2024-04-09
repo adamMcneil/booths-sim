@@ -8,7 +8,7 @@ use booth::Booth;
 use crate::booth::decimal_to_binary_string;
 
 fn main() {
-    // let mut booth = Booth::new("111001".to_string(), "100111".to_string());
+    // let mut booth = Booth::new("11001".to_string(), "10111".to_string());
     // booth.extended_solve();
     // println!("");
     // let mut booth = Booth::new("11111001".to_string(), "11100111".to_string());
@@ -30,7 +30,8 @@ fn main() {
     //     },
     //     Err(_) => todo!(),
     // } 
-    export_normal_data();
+
+    // export_normal_data();
     export_extended_data();
 }
 

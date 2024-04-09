@@ -30,8 +30,8 @@ impl Booth {
 
     pub fn solve(&mut self) {
         let n = self.length; 
-        println!("a: {}", binary_string_to_decimal_twos_complement(&self.a));
-        println!("b: {}", binary_string_to_decimal_twos_complement(&self.b));
+        println!("a: {}, bx{}", binary_string_to_decimal_twos_complement(&self.a), self.a);
+        println!("b: {}, bx{}", binary_string_to_decimal_twos_complement(&self.b), self.b);
 
         println!("{} {} {} {}", self.q, self.a, self.e, self.b);
         for _ in 0..n {
@@ -53,35 +53,31 @@ impl Booth {
             self.shift();
             self.iterations += 1;
         }
-        println!("answer: {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
-        println!("answer: {}", binary_to_hex(&(self.q.to_string() + &self.a)).unwrap());
+        println!("answer (decimal): {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
+        println!("answer (hex): 0x{}", binary_to_hex(&(self.q.to_string() + &self.a)).unwrap());
+        println!("answer (binary): bx{}{}", self.q.to_string(), self.a);
         println!("iterations: {}", self.iterations);
         println!("additions: {}", self.additions);
         println!("subtractions: {}", self.subtractions);
     }
 
     pub fn extended_solve(&mut self) {
-        self.a = extend(&self.a);
-        self.a = extend(&self.a);
-        self.b = extend(&self.b);
-        self.b = extend(&self.b);
-        self.length += 1;
-        self.length += 1;
-        self.q.push('0');
-        self.q.push('0');
         if self.length % 2 == 1 {
             self.a = extend(&self.a);
             self.b = extend(&self.b);
             self.length += 1;
             self.q.push('0');
         }
+        self.b = extend(&self.b);
+        self.length += 1;
+        self.q.push('0');
         let n = self.length; 
-        println!("a: {}", binary_string_to_decimal_twos_complement(&self.a));
-        println!("b: {}", binary_string_to_decimal_twos_complement(&self.b));
+        println!("a: {}, bx{}", binary_string_to_decimal_twos_complement(&self.a), self.a);
+        println!("b: {}, bx{}", binary_string_to_decimal_twos_complement(&self.b), self.b);
 
         println!("{} {} {} {}", self.q, self.a, self.e, self.b);
         for _ in 0..n/2 {
-            let bits = &self.a[self.length - 2..];
+            let bits = &self.a[self.length - 3..];
             match bits {
                 "00" => {
                     if self.e == '1' {
@@ -113,8 +109,8 @@ impl Booth {
             self.shift();
             self.iterations += 1;
         }
-        println!("answer: {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
-        println!("answer: {}", binary_to_hex(&(self.q.to_string() + &self.a)).unwrap());
+        println!("answer (decimal): {}", binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a)));
+        println!("answer (hex): 0x{}", binary_to_hex(&(self.q.to_string() + &self.a)).unwrap());
         println!("iterations: {}", self.iterations);
         println!("additions: {}", self.additions);
         println!("subtractions: {}", self.subtractions);
