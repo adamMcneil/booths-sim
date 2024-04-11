@@ -31,7 +31,7 @@ fn main() {
     //     Err(_) => todo!(),
     // } 
 
-    // export_normal_data();
+    export_normal_data();
     export_extended_data();
 }
 
@@ -63,6 +63,7 @@ fn export_normal_data() -> io::Result<()> {
             Ok(for pair in numbers {
                 let mut booth = Booth::new(pair.0.to_string(), pair.1.to_string());
                 booth.solve();
+                let _ = file.write(format!("bx{} bx{} bx{} 0x{} ", pair.0, pair.1, booth.get_answer_binary(), booth.get_answer_hex()).as_bytes());
                 let _ = file.write(format!("{} {} {} {}\n", pair.0.len(), booth.iterations, booth.additions, booth.subtractions).as_bytes());
 
             })
@@ -79,6 +80,7 @@ fn export_extended_data() -> io::Result<()> {
             Ok(for pair in numbers {
                 let mut booth = Booth::new(pair.0.to_string(), pair.1.to_string());
                 booth.extended_solve();
+                let _ = file.write(format!("bx{} bx{} bx{} 0x{} ", pair.0, pair.1, booth.get_answer_binary(), booth.get_answer_hex()).as_bytes());
                 let _ = file.write(format!("{} {} {} {}\n", pair.0.len(), booth.iterations, booth.additions, booth.subtractions).as_bytes());
 
             })

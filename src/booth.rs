@@ -149,8 +149,16 @@ impl Booth {
         println!("{} {} {} {} SHIFT", self.q, self.a, self.e, self.b);
     }
 
-    pub fn get_answer(self) -> i64 {
+    pub fn get_answer(&self) -> i64 {
         binary_string_to_decimal_twos_complement(&(self.q.to_string() + &self.a))
+    }
+
+    pub fn get_answer_binary(&self) -> String {
+        self.q.to_string() + &self.a.to_string()
+    }
+
+    pub fn get_answer_hex(&self) -> String {
+        binary_to_hex(&self.get_answer_binary()).unwrap()
     }
 }
 
